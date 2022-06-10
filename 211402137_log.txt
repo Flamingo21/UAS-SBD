@@ -1,0 +1,108 @@
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| cth                |
+| information_schema |
+| lab_pwl            |
+| mysql              |
+| newsigniter        |
+| newsportal         |
+| performance_schema |
+| phpmyadmin         |
+| proweb             |
+| stokbarang         |
+| task_manager       |
+| tbl_komentar       |
+| test               |
+| tubes              |
+| tubes_laravel      |
+| tubespwl           |
+| tubessbd           |
+| userform           |
+| website_laravel    |
+| yagtau             |
++--------------------+
+20 rows in set (0.001 sec)
+
+MariaDB [(none)]> use task_manager;
+Database changed
+MariaDB [task_manager]> CREATE VIEW nim_211402137 AS
+    -> 
+    -> SELECT a.id as 'Task Id', a.task_name as 'Nama Task', a.task_status as 'Status', a.category_id as 'Kategori Indikator', b.category_name as 'Kategori', c.indicator_name as 'Indikator', a.user_create as 'Creator Id', d.name as 'Creator Name', a.task_priority as 'Prioritas'
+    -> 
+    -> FROM task_plans a
+    -> 
+    -> RIGHT JOIN task_categories b
+    -> 
+    -> ON a.category_id = b.id
+    -> 
+    -> RIGHT JOIN task_indicators c
+    -> 
+    -> ON a.category_id = c.id
+    -> 
+    -> RIGHT JOIN users d
+    -> 
+    -> ON a.user_create = d.id;
+Query OK, 0 rows affected (0.008 sec)
+
+MariaDB [task_manager]> SHOW TABLES;
++------------------------+
+| Tables_in_task_manager |
++------------------------+
+| failed_jobs            |
+| migrations             |
+| nim_211402137          |
+| password_resets        |
+| personal_access_tokens |
+| task_categories        |
+| task_dailies           |
+| task_indicators        |
+| task_persons           |
+| task_plans             |
+| users                  |
++------------------------+
+11 rows in set (0.001 sec)
+
+MariaDB [task_manager]> select * from nim_211402137;
++---------+-----------+--------+--------------------+----------+-----------+------------+--------------+-----------+
+| Task Id | Nama Task | Status | Kategori Indikator | Kategori | Indikator | Creator Id | Creator Name | Prioritas |
++---------+-----------+--------+--------------------+----------+-----------+------------+--------------+-----------+
+| NULL    | NULL      | NULL   | NULL               | NULL     | NULL      | NULL       | User B       |      NULL |
+| NULL    | NULL      | NULL   | NULL               | NULL     | NULL      | NULL       | User A       |      NULL |
++---------+-----------+--------+--------------------+----------+-----------+------------+--------------+-----------+
+2 rows in set (0.001 sec)
+
+MariaDB [task_manager]> SELECT a.id, a.task_name, b.task_status, b.task_comments, d.category_name as 'Category',DATEDIFF(a.task_duration_end, a.ask_duration_start) as 'Lama Pengerjaan',c.name as 'Create By', (SELECT name from users where users.id = b.user_verify_id ) as 'Verified By'FROM task_plans aRIGHT JOIN task_dailies b ON a.id = b.plan_idINNER JOIN users c ON b.user_id = c.idRIGHT JOIN task_categories d ON a.category_id = d.id;
+ERROR 1054 (42S22): Unknown column 'a.id' in 'field list'
+MariaDB [task_manager]> SELECT
+    ->   a.id,
+    ->   a.task_name,
+    ->   b.task_status,
+    ->   b.task_comments,
+    ->   d.category_name as 'Category',
+    ->   DATEDIFF(a.task_duration_end, a.ask_duration_start) as 'Lama Pengerjaan',
+    ->   c.name as 'Create By',
+    ->   (
+    ->     SELECT
+    ->       name
+    ->     from
+    ->       users
+    ->     where
+    ->       users.id = b.user_verify_id
+    ->   ) as 'Verified By'
+    -> FROM
+    ->   task_plans a
+    ->   RIGHT JOIN task_dailies b ON a.id = b.plan_id
+    ->   INNER JOIN users c ON b.user_id = c.id
+    ->   RIGHT JOIN task_categories d ON a.category_id = d.id;
++------+-----------+-------------+---------------+--------------+-----------------+-----------+-------------+
+| id   | task_name | task_status | task_comments | Category     | Lama Pengerjaan | Create By | Verified By |
++------+-----------+-------------+---------------+--------------+-----------------+-----------+-------------+
+| NULL | NULL      | NULL        | NULL          | Analisis     |            NULL | NULL      | NULL        |
+| NULL | NULL      | NULL        | NULL          | Administrasi |            NULL | NULL      | NULL        |
+| NULL | NULL      | NULL        | NULL          | Teknikal     |            NULL | NULL      | NULL        |
++------+-----------+-------------+---------------+--------------+-----------------+-----------+-------------+
+3 rows in set (0.001 sec)
+
+MariaDB [task_manager]> exit;
